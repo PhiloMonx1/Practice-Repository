@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyDetailDTO;
 import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyExamDTO;
+import eh13.prac.dlnlvocatestlogicprac.model.DTO.WordRankUpdateDTO;
 import eh13.prac.dlnlvocatestlogicprac.model.Vocabulary;
 import eh13.prac.dlnlvocatestlogicprac.model.Word;
 import eh13.prac.dlnlvocatestlogicprac.repository.VocabularyRepository;
@@ -125,7 +126,6 @@ public class VocabularyService {
 
 		Collections.shuffle(examWords);
 
-		examWords.forEach(Word::increaseCount);
 		wordRepository.saveAll(examWords);
 
 		return VocabularyExamDTO.builder()
@@ -154,5 +154,24 @@ public class VocabularyService {
 
 	private String getRandomMeaning(List<String> meanings) {
 		return meanings.get(new Random().nextInt(meanings.size()));
+	}
+
+	@Transactional
+	public void updateWordRanks(Long vocabularyId, WordRankUpdateDTO updateDTO) {
+		Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
+				.orElseThrow(() -> new RuntimeException("단어장을 찾지 못했습니다."));
+
+		Map<Long, Word> wordMap = vocabulary.getWords().stream()
+				.collect(Collectors.toMap(Word::getId, w -> w));
+
+		for (WordRankUpdateDTO.WordRankDTO wordRankDTO : updateDTO.getWords()) {
+			Word word = wordMap.get(wordRankDTO.getId());
+			if (word != null) {
+				word.calculateRank(wordRankDTO.getRank());
+				word.increaseCount();
+			}
+		}
+
+		wordRepository.saveAll(wordMap.values());
 	}
 }

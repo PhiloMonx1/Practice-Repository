@@ -2,10 +2,12 @@ package eh13.prac.dlnlvocatestlogicprac.controller;
 
 import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyDetailDTO;
 import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyExamDTO;
+import eh13.prac.dlnlvocatestlogicprac.model.DTO.WordRankUpdateDTO;
 import eh13.prac.dlnlvocatestlogicprac.service.VocabularyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,5 +34,11 @@ public class VocabularyController {
 	@GetMapping("/{vocabularyId}/exam")
 	public ResponseEntity<VocabularyExamDTO> getVocabularyExam(@PathVariable Long vocabularyId) {
 		return ResponseEntity.ok(vocabularyService.generateVocabularyExam(vocabularyId));
+	}
+
+	@PatchMapping("/{vocabularyId}/exam")
+	public ResponseEntity<Void> updateWordRanks(@PathVariable Long vocabularyId, @RequestBody WordRankUpdateDTO updateDTO) {
+		vocabularyService.updateWordRanks(vocabularyId, updateDTO);
+		return ResponseEntity.ok().build();
 	}
 }
