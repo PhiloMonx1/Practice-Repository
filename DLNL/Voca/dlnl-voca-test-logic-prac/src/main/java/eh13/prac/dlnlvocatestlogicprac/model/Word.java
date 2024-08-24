@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Word {
+	public class Word {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

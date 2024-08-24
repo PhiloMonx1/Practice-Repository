@@ -3,6 +3,7 @@ package eh13.prac.dlnlvocatestlogicprac.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyDetailDTO;
+import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyExamDTO;
 import eh13.prac.dlnlvocatestlogicprac.model.Vocabulary;
 import eh13.prac.dlnlvocatestlogicprac.model.Word;
 import eh13.prac.dlnlvocatestlogicprac.repository.VocabularyRepository;
@@ -13,8 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -95,5 +98,61 @@ public class VocabularyService {
 				.rank(word.getRank())
 				.count(word.getCount())
 				.build();
+	}
+
+	@Transactional
+	public VocabularyExamDTO generateVocabularyExam(Long vocabularyId) {
+		Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
+				.orElseThrow(() -> new RuntimeException("단어장을 찾지 못했습니다."));
+
+		List<Word> allWords = vocabulary.getWords();
+		List<Word> zeroCountWords = allWords.stream()
+				.filter(w -> w.getCount() == 0)
+				.collect(Collectors.toList());
+		List<Word> lowRankWords = allWords.stream()
+				.filter(w -> w.getCount() > 0)
+				.sorted(Comparator.comparing(Word::getRank))
+				.limit(20)
+				.collect(Collectors.toList());
+
+		List<Word> examWords = new ArrayList<>();
+		examWords.addAll(getRandomWords(zeroCountWords, Math.min(10, zeroCountWords.size())));
+		examWords.addAll(getRandomWords(lowRankWords, Math.min(15, lowRankWords.size())));
+
+		if (examWords.size() < 25) {
+			examWords.addAll(getRandomWords(zeroCountWords, 25 - examWords.size()));
+		}
+
+		Collections.shuffle(examWords);
+
+		examWords.forEach(Word::increaseCount);
+		wordRepository.saveAll(examWords);
+
+		return VocabularyExamDTO.builder()
+				.vocabularyId(vocabularyId)
+				.round(1)
+				.words(examWords.stream()
+						.map(this::convertToWordExamDTO)
+						.collect(Collectors.toList()))
+				.build();
+	}
+
+	private List<Word> getRandomWords(List<Word> words, int count) {
+		Collections.shuffle(words);
+		return words.stream().limit(count).collect(Collectors.toList());
+	}
+
+	private VocabularyExamDTO.WordExamDTO convertToWordExamDTO(Word word) {
+		return VocabularyExamDTO.WordExamDTO.builder()
+				.id(word.getId())
+				.word(word.getWord())
+				.meaning(getRandomMeaning(word.getMeaning()))
+				.rank(word.getRank())
+				.count(word.getCount())
+				.build();
+	}
+
+	private String getRandomMeaning(List<String> meanings) {
+		return meanings.get(new Random().nextInt(meanings.size()));
 	}
 }

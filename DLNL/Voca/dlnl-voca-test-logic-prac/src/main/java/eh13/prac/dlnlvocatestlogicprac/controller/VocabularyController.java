@@ -1,6 +1,7 @@
 package eh13.prac.dlnlvocatestlogicprac.controller;
 
 import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyDetailDTO;
+import eh13.prac.dlnlvocatestlogicprac.model.DTO.VocabularyExamDTO;
 import eh13.prac.dlnlvocatestlogicprac.service.VocabularyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,10 @@ public class VocabularyController {
 	@GetMapping("/{vocabularyId}")
 	public ResponseEntity<VocabularyDetailDTO> getVocabularyDetail(@PathVariable Long vocabularyId) {
 		return ResponseEntity.ok(vocabularyService.getVocabularyDetail(vocabularyId));
+	}
+
+	@GetMapping("/{vocabularyId}/exam")
+	public ResponseEntity<VocabularyExamDTO> getVocabularyExam(@PathVariable Long vocabularyId) {
+		return ResponseEntity.ok(vocabularyService.generateVocabularyExam(vocabularyId));
 	}
 }
