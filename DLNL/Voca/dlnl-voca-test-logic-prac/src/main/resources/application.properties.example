@@ -1,0 +1,4 @@
+spring.application.name=dlnl-voca-test-logic-prac
+
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.h2.console.enabled=true
