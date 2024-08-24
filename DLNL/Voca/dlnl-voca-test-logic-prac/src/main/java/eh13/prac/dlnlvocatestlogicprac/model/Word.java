@@ -1,5 +1,6 @@
 package eh13.prac.dlnlvocatestlogicprac.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -38,6 +39,7 @@ public class Word {
 	@ElementCollection
 	@CollectionTable(name = "word_meanings", joinColumns = @JoinColumn(name = "word_id"))
 	@Column(name = "meaning")
+	@JsonBackReference
 	private List<String> meaning;
 
 	@Builder.Default

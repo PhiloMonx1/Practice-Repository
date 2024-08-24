@@ -1,5 +1,6 @@
 package eh13.prac.dlnlvocatestlogicprac.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,5 +26,6 @@ public class Vocabulary {
 	private String name;
 
 	@OneToMany(mappedBy = "vocabulary", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<Word> words;
 }
