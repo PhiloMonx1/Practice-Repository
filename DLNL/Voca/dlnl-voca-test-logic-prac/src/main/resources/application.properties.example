@@ -1,0 +1,6 @@
+spring.application.name=dlnl-voca-test-logic-prac
+
+spring.datasource.url=jdbc:h2:file:./data/testdb
+spring.h2.console.enabled=true
+
+spring.jpa.hibernate.ddl-auto=update
