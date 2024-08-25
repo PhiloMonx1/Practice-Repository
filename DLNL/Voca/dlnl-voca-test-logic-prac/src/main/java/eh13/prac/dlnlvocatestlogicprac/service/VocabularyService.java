@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -118,12 +118,14 @@ public class VocabularyService {
 				.limit(20)
 				.collect(Collectors.toList());
 
-		Set<Word> examWords = new HashSet<>();
+		Set<Word> examWords = new LinkedHashSet<>();
 		examWords.addAll(getRandomWords(zeroCountWords, Math.min(10, zeroCountWords.size())));
 		examWords.addAll(getRandomWords(lowRankWords, Math.min(15, lowRankWords.size())));
 
-		if (examWords.size() < 25) {
-			examWords.addAll(getRandomWords(zeroCountWords, 25 - examWords.size()));
+		List<Word> remainingWords = new ArrayList<>(allWords);
+		remainingWords.removeAll(examWords);
+		while (examWords.size() < 25 && !remainingWords.isEmpty()) {
+			examWords.add(getRandomWord(remainingWords));
 		}
 
 		List<Word> shuffledExamWords = new ArrayList<>(examWords);
@@ -136,6 +138,15 @@ public class VocabularyService {
 						.map(this::convertToWordExamDTO)
 						.collect(Collectors.toList()))
 				.build();
+	}
+	private Word getRandomWord(List<Word> words) {
+		if (words.isEmpty()) {
+			return null;
+		}
+		int randomIndex = (int) (Math.random() * words.size());
+		Word selectedWord = words.get(randomIndex);
+		words.remove(randomIndex);
+		return selectedWord;
 	}
 
 	private List<Word> getRandomWords(List<Word> words, int count) {
