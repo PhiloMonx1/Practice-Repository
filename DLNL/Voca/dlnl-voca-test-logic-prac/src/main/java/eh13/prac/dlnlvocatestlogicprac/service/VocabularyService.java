@@ -16,9 +16,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -116,7 +118,7 @@ public class VocabularyService {
 				.limit(20)
 				.collect(Collectors.toList());
 
-		List<Word> examWords = new ArrayList<>();
+		Set<Word> examWords = new HashSet<>();
 		examWords.addAll(getRandomWords(zeroCountWords, Math.min(10, zeroCountWords.size())));
 		examWords.addAll(getRandomWords(lowRankWords, Math.min(15, lowRankWords.size())));
 
@@ -124,14 +126,13 @@ public class VocabularyService {
 			examWords.addAll(getRandomWords(zeroCountWords, 25 - examWords.size()));
 		}
 
-		Collections.shuffle(examWords);
-
-		wordRepository.saveAll(examWords);
+		List<Word> shuffledExamWords = new ArrayList<>(examWords);
+		Collections.shuffle(shuffledExamWords);
 
 		return VocabularyExamDTO.builder()
 				.vocabularyId(vocabularyId)
 				.round(1)
-				.words(examWords.stream()
+				.words(shuffledExamWords.stream()
 						.map(this::convertToWordExamDTO)
 						.collect(Collectors.toList()))
 				.build();
