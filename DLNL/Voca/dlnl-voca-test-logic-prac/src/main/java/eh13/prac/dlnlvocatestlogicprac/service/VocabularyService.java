@@ -110,7 +110,7 @@ public class VocabularyService {
 
 		List<Word> allWords = vocabulary.getWords().stream()
 				.filter(w -> w.getCount() < 5)
-				.collect(Collectors.toList());
+				.toList();
 		List<Word> zeroCountWords = allWords.stream()
 				.filter(w -> w.getCount() == 0)
 				.collect(Collectors.toList());
