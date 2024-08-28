@@ -32,3 +32,6 @@
 
 ### API 명세
 ![API 명세서](note_image/API_Docs.png)
+
+## 2차 작업
+Practice-Repository-Private 레포지토리로 이관

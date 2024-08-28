@@ -108,7 +108,9 @@ public class VocabularyService {
 		Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
 				.orElseThrow(() -> new RuntimeException("단어장을 찾지 못했습니다."));
 
-		List<Word> allWords = vocabulary.getWords();
+		List<Word> allWords = vocabulary.getWords().stream()
+				.filter(w -> w.getCount() < 5)
+				.toList();
 		List<Word> zeroCountWords = allWords.stream()
 				.filter(w -> w.getCount() == 0)
 				.collect(Collectors.toList());
